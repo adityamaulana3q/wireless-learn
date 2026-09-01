@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WirelessLearn — Klasifikasi Jaringan Nirkabel</title>
+<meta name="description" content="Media pembelajaran interaktif klasifikasi jaringan nirkabel berdasarkan jangkauan untuk siswa SMK.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===================== SKIP LINK ===================== -->
+<a class="skip-link" href="#main">Langsung ke konten</a>
+
+<!-- ===================== BACKGROUND NETWORK GRID ===================== -->
+<div class="bg-grid" aria-hidden="true"></div>
+<canvas id="nodeCanvas" aria-hidden="true"></canvas>
+
+<!-- ===================== LEARNING PROGRESS BAR (floating) ===================== -->
+<div class="scroll-progress" aria-hidden="true"><div id="scrollProgressFill" class="scroll-progress__fill"></div></div>
+
+<!-- ===================== NAVBAR ===================== -->
+<header class="navbar" id="navbar">
+  <div class="navbar__inner">
+    <a href="#beranda" class="brand" data-nav>
+      <span class="brand__mark"><i class="fa-solid fa-wifi"></i></span>
+      <span class="brand__name">Wireless<strong>Learn</strong></span>
+    </a>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="#beranda" data-nav>Beranda</a>
+      <a href="#materi" data-nav>Materi</a>
+      <a href="#simulasi" data-nav>Simulasi</a>
+      <a href="#game" data-nav>Game</a>
+      <a href="#quiz" data-nav>Quiz</a>
+      <a href="#tentang" data-nav>Tentang</a>
+    </nav>
+
+    <div class="navbar__actions">
+      <button id="soundToggle" class="icon-btn" aria-pressed="false" aria-label="Aktifkan suara">
+        <i class="fa-solid fa-volume-xmark"></i>
+      </button>
+      <a href="#tujuan" class="btn btn--primary btn--sm" data-nav>Mulai Belajar</a>
+      <button id="hamburger" class="hamburger" aria-label="Buka menu" aria-expanded="false" aria-controls="navLinks">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ===================== 1. HERO / BERANDA ===================== -->
+<section id="beranda" class="section hero">
+  <div class="hero__content">
+    <p class="eyebrow">Materi &middot; Jaringan Nirkabel</p>
+    <h1 class="hero__title">Jaringan<br><span class="text-gradient">Nirkabel</span></h1>
+    <p class="hero__subtitle">Kenali jenis jaringan nirkabel berdasarkan jangkauan dan pahami bagaimana teknologi wireless digunakan dalam kehidupan sehari-hari.</p>
+    <div class="hero__actions">
+      <a href="#tujuan" class="btn btn--primary" data-nav>Mulai Belajar <i class="fa-solid fa-arrow-right"></i></a>
+      <a href="#simulasi" class="btn btn--ghost" data-nav>Jelajahi Simulasi <i class="fa-solid fa-satellite-dish"></i></a>
+    </div>
+    <div class="hero__stats">
+      <div><strong>4</strong><span>Kategori Jaringan</span></div>
+      <div><strong>15</strong><span>Soal Quiz</span></div>
+      <div><strong>5</strong><span>Game &amp; Simulasi</span></div>
+    </div>
+  </div>
+
+  <div class="hero__visual" aria-hidden="true">
+    <svg viewBox="0 0 560 520" class="hero-svg">
+      <!-- Ripples from AP -->
+      <g class="ripple-group" transform="translate(280,180)">
+        <circle class="ripple" r="30"/>
+        <circle class="ripple ripple--d1" r="30"/>
+        <circle class="ripple ripple--d2" r="30"/>
+      </g>
+
+      <!-- connection lines -->
+      <g class="conn-lines" stroke="url(#lineGrad)" stroke-width="2" fill="none">
+        <path id="lineSat" class="conn-line" d="M280,180 L120,60"/>
+        <path id="lineBts" class="conn-line" d="M280,180 L460,90"/>
+        <path id="lineRouter" class="conn-line" d="M280,180 L280,280"/>
+        <path id="linePhone" class="conn-line" d="M280,280 L150,400"/>
+        <path id="lineLaptop" class="conn-line" d="M280,280 L410,400"/>
+      </g>
+
+      <defs>
+        <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#35E7FF"/>
+          <stop offset="100%" stop-color="#4C7EFF"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Satellite -->
+      <g transform="translate(120,60)" class="device-node float-slow">
+        <circle r="26" class="node-bg"/>
+        <text x="0" y="8" text-anchor="middle" class="node-emoji">🛰️</text>
+      </g>
+      <!-- BTS -->
+      <g transform="translate(460,90)" class="device-node float-slow-rev">
+        <circle r="26" class="node-bg"/>
+        <text x="0" y="8" text-anchor="middle" class="node-emoji">📡</text>
+      </g>
+      <!-- Access Point / Router (center) -->
+      <g transform="translate(280,180)" class="device-node node-center">
+        <circle r="34" class="node-bg node-bg--accent"/>
+        <text x="0" y="10" text-anchor="middle" class="node-emoji node-emoji--lg">📶</text>
+      </g>
+      <!-- Router -->
+      <g transform="translate(280,280)" class="device-node">
+        <circle r="26" class="node-bg"/>
+        <text x="0" y="8" text-anchor="middle" class="node-emoji">🌐</text>
+      </g>
+      <!-- Smartphone -->
+      <g transform="translate(150,400)" class="device-node float-slow">
+        <circle r="26" class="node-bg"/>
+        <text x="0" y="8" text-anchor="middle" class="node-emoji">📱</text>
+      </g>
+      <!-- Laptop -->
+      <g transform="translate(410,400)" class="device-node float-slow-rev">
+        <circle r="26" class="node-bg"/>
+        <text x="0" y="8" text-anchor="middle" class="node-emoji">💻</text>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<!-- ===================== 2. TUJUAN PEMBELAJARAN ===================== -->
+<section id="tujuan" class="section reveal">
+  <div class="section__head">
+    <p class="eyebrow">Sebelum Mulai</p>
+    <h2>Tujuan Pembelajaran</h2>
+    <p class="section__desc">Setelah mempelajari materi ini, kamu diharapkan mampu:</p>
+  </div>
+  <div class="grid grid--3">
+    <div class="card reveal">
+      <div class="card__icon"><i class="fa-solid fa-circle-info"></i></div>
+      <h3>Memahami Konsep</h3>
+      <p>Menjelaskan pengertian jaringan nirkabel dan cara kerjanya secara umum.</p>
+    </div>
+    <div class="card reveal">
+      <div class="card__icon"><i class="fa-solid fa-layer-group"></i></div>
+      <h3>Mengenal Klasifikasi</h3>
+      <p>Menjelaskan klasifikasi jaringan nirkabel berdasarkan jangkauan: WPAN, WLAN, WMAN, WWAN.</p>
+    </div>
+    <div class="card reveal">
+      <div class="card__icon"><i class="fa-solid fa-code-compare"></i></div>
+      <h3>Membedakan Kategori</h3>
+      <p>Membedakan WPAN, WLAN, WMAN, dan WWAN berdasarkan jangkauan dan penggunaannya.</p>
+    </div>
+    <div class="card reveal">
+      <div class="card__icon"><i class="fa-solid fa-microchip"></i></div>
+      <h3>Mengenal Teknologi</h3>
+      <p>Menyebutkan contoh teknologi pada masing-masing jenis jaringan nirkabel.</p>
+    </div>
+    <div class="card reveal">
+      <div class="card__icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+      <h3>Analisis Studi Kasus</h3>
+      <p>Menentukan jenis jaringan yang tepat berdasarkan skenario kehidupan nyata.</p>
+    </div>
+    <div class="card reveal">
+      <div class="card__icon"><i class="fa-solid fa-diagram-project"></i></div>
+      <h3>Menghubungkan Konsep</h3>
+      <p>Memahami hubungan antara jangkauan jaringan dan kebutuhan penggunaannya.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 3. PENGENALAN JARINGAN NIRKABEL ===================== -->
+<section id="materi" class="section reveal">
+  <div class="section__head">
+    <p class="eyebrow">Materi Dasar</p>
+    <h2>Apa itu Jaringan Nirkabel?</h2>
+  </div>
+
+  <div class="intro-layout">
+    <div class="intro-text">
+      <p>Jaringan nirkabel <em>(wireless network)</em> adalah jaringan yang memungkinkan perangkat saling berkomunikasi <strong>tanpa menggunakan kabel fisik</strong> sebagai media transmisi utama. Data dikirim melalui gelombang radio, inframerah, atau gelombang mikro.</p>
+      <p>Teknologi ini kita temui hampir setiap hari, mulai dari menghubungkan earphone hingga mengakses internet dari ponsel di manapun kita berada.</p>
+      <ul class="tag-list">
+        <li><i class="fa-brands fa-bluetooth-b"></i> Bluetooth</li>
+        <li><i class="fa-solid fa-wifi"></i> Wi-Fi</li>
+        <li><i class="fa-solid fa-tower-broadcast"></i> WiMAX</li>
+        <li><i class="fa-solid fa-signal"></i> Jaringan Seluler</li>
+        <li><i class="fa-solid fa-satellite"></i> Satelit</li>
+      </ul>
+      <a href="#klasifikasi" class="btn btn--primary" data-nav>Pelajari Klasifikasinya <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+
+    <div class="intro-visual" aria-hidden="true">
+      <svg viewBox="0 0 400 320">
+        <g stroke="#35E7FF" stroke-width="1.5" opacity="0.55" class="mesh-lines">
+          <line x1="80" y1="60" x2="200" y2="150"/>
+          <line x1="320" y1="50" x2="200" y2="150"/>
+          <line x1="60" y1="230" x2="200" y2="150"/>
+          <line x1="330" y1="240" x2="200" y2="150"/>
+          <line x1="200" y1="150" x2="200" y2="280"/>
+        </g>
+        <g class="pulse-dot" transform="translate(200,150)"><circle r="8"/></g>
+        <text x="80" y="55" text-anchor="middle" class="node-emoji">🎧</text>
+        <text x="320" y="45" text-anchor="middle" class="node-emoji">📶</text>
+        <text x="60" y="225" text-anchor="middle" class="node-emoji">⌚</text>
+        <text x="330" y="235" text-anchor="middle" class="node-emoji">🛰️</text>
+        <text x="200" y="295" text-anchor="middle" class="node-emoji">📱</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 4. KLASIFIKASI BERDASARKAN JANGKAUAN ===================== -->
+<section id="klasifikasi" class="section reveal">
+  <div class="section__head">
+    <p class="eyebrow">Materi Utama</p>
+    <h2>Klasifikasi Jaringan Nirkabel Berdasarkan Jangkauan</h2>
+    <p class="section__desc">Klik salah satu kartu untuk mempelajari detailnya.</p>
+  </div>
+
+  <div class="grid grid--4">
+    <button class="class-card reveal" data-target="wpan" data-nav>
+      <span class="class-card__badge">WPAN</span>
+      <h3>Personal Area</h3>
+      <p class="class-card__range"><i class="fa-solid fa-ruler"></i> ± 10 meter</p>
+      <p class="class-card__desc">Menghubungkan perangkat pribadi dalam jarak sangat dekat.</p>
+      <p class="class-card__tech">Bluetooth &middot; Zigbee</p>
+    </button>
+
+    <button class="class-card reveal" data-target="wlan" data-nav>
+      <span class="class-card__badge">WLAN</span>
+      <h3>Local Area</h3>
+      <p class="class-card__range"><i class="fa-solid fa-ruler"></i> &lt; 100 meter</p>
+      <p class="class-card__desc">Menghubungkan perangkat dalam satu ruangan, rumah, atau gedung.</p>
+      <p class="class-card__tech">Wi-Fi</p>
+    </button>
+
+    <button class="class-card reveal" data-target="wman" data-nav>
+      <span class="class-card__badge">WMAN</span>
+      <h3>Metropolitan Area</h3>
+      <p class="class-card__range"><i class="fa-solid fa-ruler"></i> &lt; 50 km</p>
+      <p class="class-card__desc">Mencakup area dalam satu wilayah kota/metropolitan.</p>
+      <p class="class-card__tech">WiMAX &middot; Broadband Wireless</p>
+    </button>
+
+    <button class="class-card reveal" data-target="wwan" data-nav>
+      <span class="class-card__badge">WWAN</span>
+      <h3>Wide Area</h3>
+      <p class="class-card__range"><i class="fa-solid fa-ruler"></i> Nasional &ndash; Global</p>
+      <p class="class-card__desc">Cakupan sangat luas, hingga lintas negara.</p>
+      <p class="class-card__tech">4G &middot; 5G &middot; Satelit</p>
+    </button>
+  </div>
+
+  <p class="note reveal"><i class="fa-solid fa-triangle-exclamation"></i> Angka jangkauan di atas hanyalah <strong>ilustrasi pembelajaran</strong>. Jangkauan sebenarnya dapat berbeda tergantung teknologi, frekuensi, daya pancar, kondisi lingkungan, antena, dan infrastruktur yang digunakan.</p>
+
+  <!-- ============ VISUAL PERBANDINGAN JANGKAUAN ============ -->
+  <div class="compare-block reveal">
+    <h3 class="compare-block__title">Visual Perbandingan Jangkauan</h3>
+    <p class="section__desc">Klik salah satu lingkaran untuk melihat cakupannya membesar.</p>
+    <div class="compare-stage">
+      <div class="compare-rings" id="compareRings">
+        <button class="ring ring--wwan" data-ring="wwan" aria-label="Lihat cakupan WWAN"><span>WWAN</span></button>
+        <button class="ring ring--wman" data-ring="wman" aria-label="Lihat cakupan WMAN"><span>WMAN</span></button>
+        <button class="ring ring--wlan" data-ring="wlan" aria-label="Lihat cakupan WLAN"><span>WLAN</span></button>
+        <button class="ring ring--wpan" data-ring="wpan" aria-label="Lihat cakupan WPAN"><span>WPAN</span></button>
+        <div class="ring-center">📍</div>
+      </div>
+      <div class="compare-info" id="compareInfo">
+        <h4>Klik salah satu kategori</h4>
+        <p>Lihat contoh perangkat yang terhubung pada setiap jenis jaringan.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 5. WPAN ===================== -->
+<section id="wpan" class="section detail-section reveal">
+  <div class="detail-grid">
+    <div class="detail-text">
+      <span class="class-card__badge">WPAN</span>
+      <h2>Wireless Personal Area Network</h2>
+      <p>WPAN merupakan jaringan nirkabel dengan jangkauan <strong>sangat dekat</strong> yang digunakan untuk menghubungkan perangkat-perangkat pribadi milik satu pengguna.</p>
+      <div class="qa-list">
+        <p><strong>Jangkauan:</strong> sekitar beberapa meter (± 10 meter).</p>
+        <p><strong>Teknologi:</strong> Bluetooth, Zigbee.</p>
+        <p><strong>Contoh penggunaan:</strong></p>
+        <ul>
+          <li>Smartphone dengan headset Bluetooth</li>
+          <li>Smartphone dengan smartwatch</li>
+          <li>Keyboard &amp; mouse wireless</li>
+          <li>Sensor IoT rumah pintar</li>
+        </ul>
+      </div>
+      <button class="btn btn--primary" data-nav data-scroll-target="simulasi" data-preset="wpan">Coba Simulasi <i class="fa-solid fa-play"></i></button>
+    </div>
+    <div class="detail-visual" aria-hidden="true">
+      <svg viewBox="0 0 300 260">
+        <g class="mesh-lines" stroke="#35E7FF" stroke-width="1.5" opacity="0.6">
+          <line x1="150" y1="60" x2="90" y2="180"/>
+          <line x1="150" y1="60" x2="210" y2="180"/>
+        </g>
+        <circle cx="150" cy="60" r="26" class="node-bg node-bg--accent"/>
+        <text x="150" y="70" text-anchor="middle" class="node-emoji">📱</text>
+        <circle cx="90" cy="180" r="24" class="node-bg"/>
+        <text x="90" y="189" text-anchor="middle" class="node-emoji">🎧</text>
+        <circle cx="210" cy="180" r="24" class="node-bg"/>
+        <text x="210" y="189" text-anchor="middle" class="node-emoji">⌚</text>
+      </svg>
+      <p class="visual-caption">Personal Area</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 6. WLAN ===================== -->
+<section id="wlan" class="section detail-section detail-section--alt reveal">
+  <div class="detail-grid detail-grid--reverse">
+    <div class="detail-text">
+      <span class="class-card__badge">WLAN</span>
+      <h2>Wireless Local Area Network</h2>
+      <p>WLAN digunakan untuk menghubungkan perangkat dalam <strong>area lokal</strong> seperti rumah, sekolah, kantor, kampus, atau gedung.</p>
+      <div class="qa-list">
+        <p><strong>Jangkauan:</strong> area lokal, kurang lebih &lt; 100 meter.</p>
+        <p><strong>Teknologi:</strong> Wi-Fi.</p>
+        <p><strong>Catatan:</strong> jangkauan bergantung pada access point, frekuensi, daya, antena, dan kondisi lingkungan.</p>
+      </div>
+      <button class="btn btn--primary" data-nav data-scroll-target="simulasi" data-preset="wlan">Coba Simulasi <i class="fa-solid fa-play"></i></button>
+    </div>
+    <div class="detail-visual" aria-hidden="true">
+      <svg viewBox="0 0 320 260">
+        <g class="mesh-lines" stroke="#35E7FF" stroke-width="1.5" opacity="0.6">
+          <line x1="160" y1="50" x2="70" y2="170"/>
+          <line x1="160" y1="50" x2="160" y2="180"/>
+          <line x1="160" y1="50" x2="250" y2="170"/>
+        </g>
+        <circle cx="160" cy="50" r="24" class="node-bg node-bg--accent"/>
+        <text x="160" y="59" text-anchor="middle" class="node-emoji">📡</text>
+        <circle cx="70" cy="170" r="22" class="node-bg"/>
+        <text x="70" y="178" text-anchor="middle" class="node-emoji">💻</text>
+        <circle cx="160" cy="180" r="22" class="node-bg"/>
+        <text x="160" y="188" text-anchor="middle" class="node-emoji">📱</text>
+        <circle cx="250" cy="170" r="22" class="node-bg"/>
+        <text x="250" y="178" text-anchor="middle" class="node-emoji">💻</text>
+      </svg>
+      <p class="visual-caption">Access Point &middot; Kelas / Guru / Siswa</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 7. WMAN ===================== -->
+<section id="wman" class="section detail-section reveal">
+  <div class="detail-grid">
+    <div class="detail-text">
+      <span class="class-card__badge">WMAN</span>
+      <h2>Wireless Metropolitan Area Network</h2>
+      <p>WMAN mencakup area yang <strong>lebih luas daripada WLAN</strong>, digunakan untuk menghubungkan berbagai lokasi dalam satu wilayah metropolitan/kota.</p>
+      <div class="qa-list">
+        <p><strong>Jangkauan:</strong> area kota, kurang lebih &lt; 50 km.</p>
+        <p><strong>Teknologi:</strong> WiMAX, Broadband Wireless.</p>
+      </div>
+      <button class="btn btn--primary" data-nav data-scroll-target="simulasi" data-preset="wman">Coba Simulasi <i class="fa-solid fa-play"></i></button>
+    </div>
+    <div class="detail-visual" aria-hidden="true">
+      <svg viewBox="0 0 340 200">
+        <g class="mesh-lines mesh-lines--signal" stroke="#4C7EFF" stroke-width="1.5" opacity="0.6">
+          <line x1="60" y1="60" x2="170" y2="60"/>
+          <line x1="170" y1="60" x2="280" y2="60"/>
+          <line x1="60" y1="60" x2="60" y2="150"/>
+          <line x1="60" y1="150" x2="170" y2="150"/>
+          <line x1="170" y1="150" x2="280" y2="150"/>
+          <line x1="170" y1="60" x2="170" y2="150"/>
+        </g>
+        <text x="60" y="65" text-anchor="middle" class="node-emoji">🏢</text>
+        <circle cx="170" cy="60" r="24" class="node-bg node-bg--accent"/>
+        <text x="170" y="69" text-anchor="middle" class="node-emoji">📡</text>
+        <text x="280" y="65" text-anchor="middle" class="node-emoji">🏫</text>
+        <text x="60" y="155" text-anchor="middle" class="node-emoji">🏠</text>
+        <text x="170" y="155" text-anchor="middle" class="node-emoji">🏢</text>
+        <text x="280" y="155" text-anchor="middle" class="node-emoji">🏥</text>
+      </svg>
+      <p class="visual-caption">Jaringan Antar Gedung dalam Kota</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 8. WWAN ===================== -->
+<section id="wwan" class="section detail-section detail-section--alt reveal">
+  <div class="detail-grid detail-grid--reverse">
+    <div class="detail-text">
+      <span class="class-card__badge">WWAN</span>
+      <h2>Wireless Wide Area Network</h2>
+      <p>WWAN memiliki cakupan <strong>sangat luas</strong>, bahkan dapat mencakup wilayah nasional hingga global.</p>
+      <div class="qa-list">
+        <p><strong>Jangkauan:</strong> nasional &ndash; global.</p>
+        <p><strong>Teknologi:</strong> 4G, 5G, jaringan seluler, satelit.</p>
+      </div>
+      <button class="btn btn--primary" data-nav data-scroll-target="simulasi" data-preset="wwan">Coba Simulasi <i class="fa-solid fa-play"></i></button>
+    </div>
+    <div class="detail-visual" aria-hidden="true">
+      <svg viewBox="0 0 320 240">
+        <g class="mesh-lines" stroke="#35E7FF" stroke-width="1.5" opacity="0.6">
+          <line x1="160" y1="140" x2="160" y2="60"/>
+          <line x1="60" y1="170" x2="160" y2="140"/>
+          <line x1="260" y1="170" x2="160" y2="140"/>
+        </g>
+        <text x="160" y="55" text-anchor="middle" class="node-emoji">🛰️</text>
+        <circle cx="160" cy="140" r="26" class="node-bg node-bg--accent"/>
+        <text x="160" y="149" text-anchor="middle" class="node-emoji">📡</text>
+        <text x="60" y="175" text-anchor="middle" class="node-emoji node-emoji--lg">🌍</text>
+        <text x="260" y="175" text-anchor="middle" class="node-emoji node-emoji--lg">🌍</text>
+      </svg>
+      <p class="visual-caption">Jaringan Seluler / Global</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 9. SIMULASI JANGKAUAN ===================== -->
+<section id="simulasi" class="section reveal">
+  <div class="section__head">
+    <p class="eyebrow">Fitur Utama</p>
+    <h2>Wireless Range Simulator</h2>
+    <p class="section__desc">Pilih kategori jaringan lalu klik perangkat untuk melihat penjelasannya.</p>
+  </div>
+
+  <div class="sim-tabs" role="tablist" aria-label="Pilih jenis jaringan">
+    <button class="sim-tab is-active" data-sim="wpan" role="tab" aria-selected="true">WPAN</button>
+    <button class="sim-tab" data-sim="wlan" role="tab" aria-selected="false">WLAN</button>
+    <button class="sim-tab" data-sim="wman" role="tab" aria-selected="false">WMAN</button>
+    <button class="sim-tab" data-sim="wwan" role="tab" aria-selected="false">WWAN</button>
+  </div>
+
+  <div class="sim-stage-wrap">
+    <div class="sim-stage" id="simStage">
+      <div class="sim-coverage" id="simCoverage"></div>
+      <div class="sim-devices" id="simDevices"></div>
+    </div>
+
+    <aside class="sim-panel" id="simPanel">
+      <h3 id="simPanelTitle">WPAN</h3>
+      <dl class="sim-panel__list" id="simPanelList"></dl>
+    </aside>
+  </div>
+
+  <div class="tooltip-box" id="deviceTooltip" role="status" aria-live="polite"></div>
+</section>
+
+<!-- ===================== 10. FLASHCARD ===================== -->
+<section id="flashcard" class="section reveal">
+  <div class="section__head">
+    <p class="eyebrow">Ulas Cepat</p>
+    <h2>Flashcard</h2>
+    <p class="section__desc">Klik kartu untuk membalik dan melihat penjelasan.</p>
+  </div>
+  <div class="flash-grid" id="flashGrid"></div>
+</section>
+
+<!-- ===================== 11. GAME DRAG & DROP ===================== -->
+<section id="game" class="section reveal">
+  <div class="section__head">
+    <p class="eyebrow">Game</p>
+    <h2>Pasangkan Teknologi dengan Jaringan yang Tepat</h2>
+    <p class="section__desc">Seret (drag) setiap teknologi ke kategori jaringan yang benar. Pada perangkat sentuh, ketuk teknologi lalu ketuk kategori tujuan.</p>
+  </div>
+
+  <div class="dnd-wrap">
+    <div class="dnd-items" id="dndItems" aria-label="Daftar teknologi"></div>
+    <div class="dnd-targets" id="dndTargets" aria-label="Kategori jaringan"></div>
+  </div>
+  <div class="dnd-footer">
+    <p id="dndScore">Skor: 0 / 7</p>
+    <button class="btn btn--ghost btn--sm" id="dndReset">Ulangi Game <i class="fa-solid fa-rotate-right"></i></button>
+  </div>
+
+  <!-- ===================== MINI GAME TEBAK JARINGAN ===================== -->
+  <div class="guess-game reveal">
+    <h3 class="compare-block__title">Mini Game: Siapa Aku?</h3>
+    <p class="section__desc">Tebak jenis jaringan berdasarkan petunjuk yang diberikan secara bertahap.</p>
+    <div class="guess-card">
+      <p class="guess-clue" id="guessClue">Tekan "Mulai" untuk memainkan game ini.</p>
+      <div class="guess-actions" id="guessActions">
+        <button class="btn btn--primary btn--sm" id="guessStart">Mulai <i class="fa-solid fa-play"></i></button>
+      </div>
+      <div class="guess-options" id="guessOptions" hidden>
+        <button class="btn btn--ghost btn--sm" data-guess="WPAN">WPAN</button>
+        <button class="btn btn--ghost btn--sm" data-guess="WLAN">WLAN</button>
+        <button class="btn btn--ghost btn--sm" data-guess="WMAN">WMAN</button>
+        <button class="btn btn--ghost btn--sm" data-guess="WWAN">WWAN</button>
+      </div>
+      <p class="guess-feedback" id="guessFeedback" aria-live="polite"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 12. STUDI KASUS ===================== -->
+<section id="studikasus" class="section reveal">
+  <div class="section__head">
+    <p class="eyebrow">Latihan Analisis</p>
+    <h2>Temukan Jaringan yang Tepat</h2>
+    <p class="section__desc">Baca skenario, lalu pilih jenis jaringan yang paling sesuai.</p>
+  </div>
+  <div class="case-wrap" id="caseWrap">
+    <div class="case-progress"><span id="caseProgressText">Kasus 1 dari 4</span></div>
+    <p class="case-scenario" id="caseScenario"></p>
+    <div class="case-options" id="caseOptions"></div>
+    <p class="case-feedback" id="caseFeedback" aria-live="polite"></p>
+    <button class="btn btn--primary btn--sm" id="caseNext" hidden>Lanjut <i class="fa-solid fa-arrow-right"></i></button>
+  </div>
+</section>
+
+<!-- ===================== 13. QUIZ ===================== -->
+<section id="quiz" class="section reveal">
+  <div class="section__head">
+    <p class="eyebrow">Uji Pemahaman</p>
+    <h2>Quiz Klasifikasi Jaringan Nirkabel</h2>
+  </div>
+
+  <div class="quiz-wrap" id="quizWrap">
+    <div class="quiz-progress">
+      <span id="quizProgressText">Soal 1 dari 15</span>
+      <div class="progress-track"><div class="progress-fill" id="quizProgressFill"></div></div>
+    </div>
+
+    <div class="quiz-card" id="quizCard">
+      <p class="quiz-question" id="quizQuestion"></p>
+      <div class="quiz-options" id="quizOptions"></div>
+      <p class="quiz-feedback" id="quizFeedback" aria-live="polite"></p>
+      <button class="btn btn--primary" id="quizNext" hidden>Lanjut <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+
+    <!-- ===================== HASIL QUIZ ===================== -->
+    <div class="quiz-result" id="quizResult" hidden>
+      <i class="fa-solid fa-trophy quiz-result__icon"></i>
+      <h3>Quiz Selesai!</h3>
+      <p class="quiz-result__score" id="quizResultScore">0</p>
+      <p class="quiz-result__category" id="quizResultCategory">-</p>
+      <div class="quiz-result__actions">
+        <button class="btn btn--primary" id="quizRetry">Ulangi Quiz <i class="fa-solid fa-rotate-right"></i></button>
+        <a href="#klasifikasi" class="btn btn--ghost" data-nav>Pelajari Materi Lagi</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 14. DASHBOARD PROGRESS ===================== -->
+<section id="progress" class="section reveal">
+  <div class="section__head">
+    <p class="eyebrow">Ringkasan</p>
+    <h2>Progress Belajar</h2>
+  </div>
+  <div class="progress-dash">
+    <div class="progress-dash__card">
+      <h4>Materi</h4>
+      <ul id="progressMateri" class="progress-dash__list"></ul>
+    </div>
+    <div class="progress-dash__card">
+      <h4>Skor Quiz Terakhir</h4>
+      <p class="progress-dash__big" id="progressQuizScore">-</p>
+    </div>
+    <div class="progress-dash__card">
+      <h4>Skor Game</h4>
+      <p class="progress-dash__big" id="progressGameScore">-</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 15. INFOGRAFIS PERBANDINGAN ===================== -->
+<section class="section reveal">
+  <div class="section__head">
+    <p class="eyebrow">Rangkuman</p>
+    <h2>Tabel Perbandingan</h2>
+  </div>
+  <div class="table-wrap">
+    <table class="compare-table">
+      <thead>
+        <tr><th>Jenis</th><th>Nama</th><th>Jangkauan</th><th>Contoh Teknologi</th></tr>
+      </thead>
+      <tbody>
+        <tr><td data-label="Jenis"><span class="pill pill--wpan">WPAN</span></td><td data-label="Nama">Personal Area</td><td data-label="Jangkauan">Sangat dekat (± 10 m)</td><td data-label="Contoh">Bluetooth, Zigbee</td></tr>
+        <tr><td data-label="Jenis"><span class="pill pill--wlan">WLAN</span></td><td data-label="Nama">Local Area</td><td data-label="Jangkauan">Area lokal (&lt; 100 m)</td><td data-label="Contoh">Wi-Fi</td></tr>
+        <tr><td data-label="Jenis"><span class="pill pill--wman">WMAN</span></td><td data-label="Nama">Metropolitan Area</td><td data-label="Jangkauan">Area kota (&lt; 50 km)</td><td data-label="Contoh">WiMAX</td></tr>
+        <tr><td data-label="Jenis"><span class="pill pill--wwan">WWAN</span></td><td data-label="Nama">Wide Area</td><td data-label="Jangkauan">Nasional / Global</td><td data-label="Contoh">4G, 5G, Satelit</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===================== 16. TENTANG ===================== -->
+<section id="tentang" class="section reveal">
+  <div class="section__head">
+    <p class="eyebrow">Tentang</p>
+    <h2>Tentang Media Pembelajaran Ini</h2>
+  </div>
+  <div class="about-card">
+    <p><strong>WirelessLearn</strong> adalah media pembelajaran interaktif yang dirancang untuk membantu siswa SMK memahami materi <em>Klasifikasi Jaringan Nirkabel Berdasarkan Jangkauan</em> melalui visualisasi, simulasi, game, dan quiz.</p>
+    <p>Belajar konsep jaringan nirkabel dengan alur: <strong>melihat &rarr; mencoba &rarr; bermain &rarr; menjawab &rarr; mendapatkan feedback &rarr; memahami materi.</strong></p>
+  </div>
+</section>
+
+</main>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__brand">
+      <span class="brand__mark"><i class="fa-solid fa-wifi"></i></span>
+      <span class="brand__name">Wireless<strong>Learn</strong></span>
+      <p>Media Pembelajaran Interaktif Jaringan Nirkabel</p>
+    </div>
+    <nav class="footer__links">
+      <a href="#beranda" data-nav>Beranda</a>
+      <a href="#materi" data-nav>Materi</a>
+      <a href="#simulasi" data-nav>Simulasi</a>
+      <a href="#game" data-nav>Game</a>
+      <a href="#quiz" data-nav>Quiz</a>
+    </nav>
+  </div>
+  <p class="footer__copy">© 2026 WirelessLearn &middot; Media Pembelajaran Jaringan Nirkabel</p>
+</footer>
+
+<button id="backToTop" class="back-to-top" aria-label="Kembali ke atas">
+  <i class="fa-solid fa-arrow-up"></i>
+</button>
+
+<script src="script.js"></script>
+</body>
+</html>
